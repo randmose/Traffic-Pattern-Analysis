@@ -14,10 +14,16 @@ class TrafficNetwork:
     Nodes represent intersections, edges represent roads with traffic data.
     """
     
-    def __init__(self):
-        """Initialize an empty traffic network."""
+    def __init__(self, lane_capacity: int = 2000):
+        """
+        Initialize an empty traffic network.
+        
+        Args:
+            lane_capacity: Vehicle capacity per hour per lane (default: 2000)
+        """
         self.graph = nx.DiGraph()
         self.traffic_data = {}
+        self.lane_capacity = lane_capacity
     
     def add_intersection(self, intersection_id: str, latitude: float = 0.0, longitude: float = 0.0):
         """
@@ -78,7 +84,7 @@ class TrafficNetwork:
             lanes = edge_data.get('lanes', 1)
             
             # Calculate congestion factor (simplified model)
-            capacity = lanes * 2000  # vehicles per hour per lane
+            capacity = lanes * self.lane_capacity  # vehicles per hour per lane
             congestion_factor = 1 + (vehicle_count / capacity) ** 2
             
             self.graph[from_intersection][to_intersection]['travel_time'] = base_time * congestion_factor

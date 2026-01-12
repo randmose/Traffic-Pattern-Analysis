@@ -311,15 +311,35 @@ class TrafficVisualizer:
             routes: Dictionary of routes from RouteOptimizer.compare_routes()
             output_file: Path to save the figure (if None, display only)
         """
-        fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+        # Define route types and their display properties
+        route_configs = []
+        route_order = ['fastest', 'shortest', 'least_congested']
+        route_titles = {
+            'fastest': 'Fastest Route',
+            'shortest': 'Shortest Route', 
+            'least_congested': 'Least Congested'
+        }
+        route_colors = {
+            'fastest': 'blue',
+            'shortest': 'green',
+            'least_congested': 'orange'
+        }
         
-        route_types = [
-            ('fastest', 'Fastest Route', 'blue'),
-            ('shortest', 'Shortest Route', 'green'),
-            ('least_congested', 'Least Congested', 'orange')
-        ]
+        # Build configuration list based on available routes
+        for key in route_order:
+            if key in routes:
+                route_configs.append((key, route_titles.get(key, key), route_colors.get(key, 'gray')))
         
-        for idx, (route_key, title, color) in enumerate(route_types):
+        if not route_configs:
+            return
+        
+        fig, axes = plt.subplots(1, len(route_configs), figsize=(6 * len(route_configs), 6))
+        
+        # Handle single route case
+        if len(route_configs) == 1:
+            axes = [axes]
+        
+        for idx, (route_key, title, color) in enumerate(route_configs):
             ax = axes[idx]
             plt.sca(ax)
             

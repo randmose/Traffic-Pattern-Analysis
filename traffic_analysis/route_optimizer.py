@@ -3,6 +3,7 @@ Route Optimizer Module
 Finds optimal routes considering traffic conditions.
 """
 
+import itertools
 import networkx as nx
 from typing import List, Optional, Dict, Tuple
 from .traffic_network import TrafficNetwork
@@ -161,15 +162,15 @@ class RouteOptimizer:
         
         try:
             # Find k shortest paths based on travel time
-            paths = list(nx.shortest_simple_paths(
+            paths_generator = nx.shortest_simple_paths(
                 self.network.graph,
                 start,
                 end,
                 weight='travel_time'
-            ))
+            )
             
             routes = []
-            for path in paths[:k]:
+            for path in itertools.islice(paths_generator, k):
                 # Calculate statistics for this path
                 total_distance = 0
                 total_time = 0
